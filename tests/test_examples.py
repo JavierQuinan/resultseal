@@ -99,6 +99,25 @@ def test_llamaindex_example_docstring_documents_installation() -> None:
     assert "FunctionTool" in doc
 
 
+def test_langgraph_example_blocks_empty_tool_result() -> None:
+    """The framework-free LangGraph guard blocks empty results and seals verified ones."""
+    namespace = runpy.run_path(EXAMPLES / "langgraph_tool_guard.py")
+    with pytest.raises(
+        namespace["BlockedObservation"],
+        match="EMPTY_WITHOUT_NOT_FOUND_SENTINEL",
+    ):
+        namespace["guard_search_result"]([])
+
+    verified = namespace["guard_search_result"]({"customer_id": "42", "name": "Ada"})
+    assert verified == {"customer_id": "42", "name": "Ada"}
+
+
+def test_langgraph_example_docstring_documents_installation() -> None:
+    """The example documents the optional LangGraph dependency."""
+    doc = (EXAMPLES / "langgraph_tool_guard.py").read_text(encoding="utf-8")
+    assert "Install ``langgraph``" in doc
+    assert "ToolNode" in doc
+
 def test_crewai_example_blocks_empty_tool_result() -> None:
     """The framework-free CrewAI guard blocks empty results and seals verified ones."""
     namespace = runpy.run_path(EXAMPLES / "crewai_tool_guard.py")
